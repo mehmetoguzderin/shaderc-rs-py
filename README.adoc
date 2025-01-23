@@ -1,0 +1,324 @@
+# shaderc-rs-py
+:toc:
+
+`shaderc-rs-py` provides Python bindings for the `shaderc` library through its Rust bindings for compiling GLSL shaders to SPIR-V binary or assembly directly from Python code. By leveraging `PyO3`, `shaderc-rs-py` aims to provide a flexible API surface, including support for advanced shader compilation options, preprocessing capabilities, macro definitions, and SPIR-V assembly generation.
+
+image::assets/images/shaderc-rs-py-20250124.webp[shaderc-rs-py Example Explorer]
+
+WARNING: This library is currently experimental. While it offers a broad range of functionality, it may contain memory leaks or other issues. It has not been thoroughly tested, and it is recommended that you use it cautiously in production contexts.
+
+## Features
+
+* Provides Python bindings over shaderc-rs (Rust) for GLSL-to-SPIR-V compilation.  
+* Offers fine-grained control of compilation options (optimization levels, target environment, debug info, macro definitions, and more).  
+* Generates both SPIR-V binary and assembly.  
+* Includes examples demonstrating real-time shader editing with wgpu-py and PySide6.  
+* Can be built into Python wheels for multiple platforms (Windows, macOS, and Linux) using Maturin and PyO3.  
+
+## Installation
+
+The recommended Python version is 3.12 or higher.  
+You can clone the repository and build from source, or install from the PyPI package release (`pip install shaderc-rs-py` or `uv add shaderc-rs-py`).  
+
+If you plan to work on this project locally, follow these steps:
+
+1. Install UV (a CLI tool for Python environment management).  
++
+----
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# or on Windows PowerShell:
+# powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+----
+
+2. Update UV and synchronize the workspace:  
++
+----
+uv self update
+uv sync
+----
+
+3. Activate the virtual environment and install any development dependencies. For instance:  
++
+----
+source .venv/bin/activate
+# or on Windows PowerShell:
+# .venv\Scripts\activate
+uv add ruff
+maturin develop --uv
+----
+
+Alternatively, to set up the project directly:  
+
+----
+git clone https://github.com/mehmetoguzderin/shaderc-rs-py
+cd shaderc-rs-py
+uv sync
+code .
+----
+
+## Usage
+
+### Basic Examples
+
+#### Basic Vertex Shader Compilation
+
+----
+import shadercrs
+
+compiler = shadercrs.Compiler()
+options = shadercrs.CompileOptions()
+
+vertex_shader = """
+#version 450
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texcoord;
+
+layout(location = 0) out vec2 fragTexcoord;
+
+void main() {
+    gl_Position = vec4(position, 1.0);
+    fragTexcoord = texcoord;
+}
+"""
+
+result = compiler.compile_into_spirv(
+    source=vertex_shader,
+    stage="vertex",
+    input_file_name="shader.vert",
+    entry_point="main",
+)
+
+spirv_binary = result.as_binary()
+print(f"Compiled SPIR-V size: {len(spirv_binary)} words")
+
+if result.get_num_warnings() > 0:
+    print("Compilation warnings:", result.get_warning_messages())
+----
+
+### Advanced Examples
+
+#### Fragment Shader with Macros and Assembly
+
+----
+import shadercrs
+
+compiler = shadercrs.Compiler()
+options = shadercrs.CompileOptions()
+
+options.set_source_language("glsl")
+options.set_target_env("vulkan", "vulkan_1_1")
+options.set_optimization_level("performance")
+options.set_generate_debug_info()
+options.add_macro_definition("MAX_VERTICES", "1024")
+
+fragment_shader = """
+#version 450
+#define MAX_LIGHTS 4
+
+layout(location = 0) in vec2 fragTexcoord;
+layout(location = 0) out vec4 outColor;
+
+void main() {
+    outColor = vec4(fragTexcoord, 0.0, 1.0);
+    #ifdef MAX_VERTICES
+    #endif
+}
+"""
+
+result = compiler.compile_into_spirv(
+    source=fragment_shader,
+    stage="fragment",
+    input_file_name="shader.frag",
+    entry_point="main",
+    options=options,
+)
+
+spirv_asm = compiler.compile_into_spirv_assembly(
+    source=fragment_shader,
+    stage="fragment",
+    input_file_name="shader.frag",
+    entry_point="main",
+    options=options,
+)
+
+print("SPIR-V Assembly:", spirv_asm.as_text())
+----
+
+#### Preprocessing with Macro Definitions
+
+----
+import shadercrs
+
+def compile_shader(source, shader_value):
+    stage = "vertex"
+    compiler = shadercrs.Compiler()
+    options = shadercrs.CompileOptions()
+
+    options.add_macro_definition("SHADER_VALUE", shader_value)
+    options.add_macro_definition("DEBUG", "1")
+
+    try:
+        preprocessed = compiler.preprocess(
+            source=source,
+            input_file_name=f"shader.{stage}",
+            entry_point="main",
+            options=options,
+        )
+
+        print("Preprocessed source:")
+        print(preprocessed.as_text())
+
+        result = compiler.compile_into_spirv(
+            source=source,
+            stage=stage,
+            input_file_name=f"shader.{stage}",
+            entry_point="main",
+            options=options,
+        )
+        return result.as_binary()
+
+    except Exception as e:
+        print(f"Compilation failed: {e}")
+        return None
+
+shader_with_value = """
+#version 450
+
+void main() {
+    float value = SHADER_VALUE;
+}
+"""
+
+spirv = compile_shader(shader_with_value, "1.0")
+
+if spirv is not None:
+    print("Compilation successful")
+----
+
+#### Compute Shader Compilation to SPIR-V File
+
+----
+import shadercrs
+
+compiler = shadercrs.Compiler()
+options = shadercrs.CompileOptions()
+
+compute_shader = """
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+layout(set = 0, binding = 0) buffer Data {
+    float values[];
+} data;
+
+void main() {
+    uint index = gl_GlobalInvocationID.x;
+    data.values[index] *= 2.0;
+}
+"""
+
+try:
+    result = compiler.compile_into_spirv(
+        source=compute_shader,
+        stage="compute",
+        input_file_name="compute.comp",
+        entry_point="main",
+        options=options,
+    )
+    spirv_binary = result.as_binary()
+    spirv_bytes = result.as_binary_u8()
+
+    with open("compute.spv", "wb") as f:
+        f.write(bytes(spirv_bytes))
+
+    print(f"Compute shader compiled successfully: {len(spirv_binary)} words")
+
+except Exception as e:
+    print(f"Compilation failed: {e}")
+----
+
+#### Querying SPIR-V Version and Parsing Profile
+
+----
+import shadercrs
+
+def main():
+    version, revision = shadercrs.get_spirv_version_py()
+    print("SPIR-V version:", version, "revision:", revision)
+
+    compiler = shadercrs.Compiler()
+    opts = shadercrs.CompileOptions()
+    opts.set_source_language("glsl")
+    opts.set_target_env("vulkan", "vulkan_1_2")
+    opts.set_optimization_level("performance")
+    opts.set_generate_debug_info()
+
+    glsl_source = """
+    #version 450
+    layout(location = 0) in vec3 inPos;
+    void main() {
+        gl_Position = vec4(inPos, 1.0);
+    }
+    """
+
+    artifact = compiler.compile_into_spirv(
+        glsl_source, "vertex", "my_shader.glsl", "main", opts
+    )
+
+    if artifact.is_empty():
+        print("Compilation produced empty result!")
+    else:
+        print("Compilation warnings:", artifact.get_num_warnings())
+        if artifact.get_num_warnings() != 0:
+            print("Warning messages:")
+            print(artifact.get_warning_messages())
+
+        spirv_bytes = artifact.as_binary()
+        print("SPIR-V word count:", len(spirv_bytes))
+
+    asm_artifact = compiler.compile_into_spirv_assembly(glsl_source, "vertex")
+    asm_text = asm_artifact.as_text()
+    print("Assembly text:\n", asm_text)
+
+    maybe_profile = shadercrs.parse_version_profile_py("450core")
+    print("Parsed 450core =>", maybe_profile)
+
+if __name__ == "__main__":
+    main()
+----
+
+## Development
+
+To develop shaderc-rs-py, you can use VS Code in tandem with UV to manage your environment. Run the following commands in your project directory:
+
+----
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv self update
+uv sync
+source .venv/bin/activate
+uv add ruff
+maturin develop --uv
+----
+
+Then open the project in VS Code (or any other editor) and begin making changes. You can run tests (once tests are implemented) by installing pytest inside your environment and executing:
+
+----
+pytest
+----
+
+## Running the Example Explorer
+
+A real-time shader editing example is located in the "examples" directory. This example uses PySide6 for the GUI and wgpu-py for GPU rendering. It displays a constantly rendered scene in which you can modify a fragment shader and see changes immediately.
+
+Steps to run the example:
+
+1. Ensure you have wgpu-py and PySide6 installed (already part of the requirements in the "pyproject.toml" file).
++
+----
+uv sync
+----
+2. Activate your environment and navigate to the "examples" directory.
+3. Run the Python script (e.g., "python explorer.py" if that is the entry point).
+
+Once launched, a window will appear where you can adjust the optimization level, edit the shader source, and observe the effects in real-time.

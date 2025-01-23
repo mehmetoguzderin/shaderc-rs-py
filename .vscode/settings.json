@@ -1,0 +1,5 @@
+{
+    "editor.wordWrap": "on",
+    "python.envFile": "${workspaceFolder}/.venv",
+    "python.terminal.activateEnvironment": true
+}
