@@ -345,7 +345,6 @@ To develop `shaderc-rs-py`, you can use VS Code in tandem with UV to manage your
 
 [source,bash]
 ----
-curl -LsSf https://astral.sh/uv/install.sh | sh
 uv self update
 uv sync
 source .venv/bin/activate
