@@ -288,6 +288,60 @@ if __name__ == "__main__":
     main()
 ----
 
+#### Basic Compute Shader Compilation as `uv` Script
+
+----
+#!/usr/bin/env -S uv run
+# /// script
+# dependencies = [
+#   "shaderc-rs-py",
+# ]
+# [tool.uv]
+# exclude-newer = "2025-02-20T00:00:00Z"
+# ///
+
+import shadercrs
+
+compiler = shadercrs.Compiler()
+options = shadercrs.CompileOptions()
+
+compute_shader = """
+#version 450
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+void main() {
+}
+"""
+
+result = compiler.compile_into_spirv(
+    source=compute_shader,
+    stage="compute",
+    input_file_name="shader.comp",
+    entry_point="main",
+)
+
+spirv_binary = result.as_binary()
+print(f"Compiled SPIR-V size: {len(spirv_binary)} words")
+
+if result.get_num_warnings() > 0:
+    print("Compilation warnings:", result.get_warning_messages())
+
+"""
+
+result = compiler.compile_into_spirv(
+    source=vertex_shader,
+    stage="vertex",
+    input_file_name="shader.vert",
+    entry_point="main",
+)
+
+spirv_binary = result.as_binary()
+print(f"Compiled SPIR-V size: {len(spirv_binary)} words")
+
+if result.get_num_warnings() > 0:
+    print("Compilation warnings:", result.get_warning_messages())
+----
+
 ## Development
 
 To develop shaderc-rs-py, you can use VS Code in tandem with UV to manage your environment. Run the following commands in your project directory:
