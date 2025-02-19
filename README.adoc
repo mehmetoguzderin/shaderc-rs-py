@@ -5,7 +5,10 @@
 
 image::assets/images/shaderc-rs-py-20250124.webp[shaderc-rs-py Example Explorer]
 
-WARNING: This library is currently experimental. While it offers a broad range of functionality, it may contain memory leaks or other issues. It has not been thoroughly tested, and it is recommended that you use it cautiously in production contexts.
+[WARNING]
+====
+This library is currently experimental. While it offers a broad range of functionality, it may contain memory leaks or other issues. It has not been thoroughly tested, and it is recommended that you use it cautiously in production contexts.
+====
 
 ## Features
 
@@ -17,13 +20,13 @@ WARNING: This library is currently experimental. While it offers a broad range o
 
 ## Installation
 
-The recommended Python version is 3.12 or higher.  
-You can clone the repository and build from source, or install from the PyPI package release (`pip install shaderc-rs-py` or `uv add shaderc-rs-py`).  
+The recommended Python version is 3.12 or higher. You can clone the repository and build from source, or install from the PyPI package release (`pip install shaderc-rs-py` or `uv add shaderc-rs-py`).
 
 If you plan to work on this project locally, follow these steps:
 
 1. Install UV (a CLI tool for Python environment management).  
 +
+[source,bash]
 ----
 curl -LsSf https://astral.sh/uv/install.sh | sh
 # or on Windows PowerShell:
@@ -32,6 +35,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 2. Update UV and synchronize the workspace:  
 +
+[source,bash]
 ----
 uv self update
 uv sync
@@ -39,6 +43,7 @@ uv sync
 
 3. Activate the virtual environment and install any development dependencies. For instance:  
 +
+[source,bash]
 ----
 source .venv/bin/activate
 # or on Windows PowerShell:
@@ -47,8 +52,9 @@ uv add ruff
 maturin develop --uv
 ----
 
-Alternatively, to set up the project directly:  
+Alternatively, to set up the project directly:
 
+[source,bash]
 ----
 git clone https://github.com/mehmetoguzderin/shaderc-rs-py
 cd shaderc-rs-py
@@ -62,6 +68,7 @@ code .
 
 #### Basic Vertex Shader Compilation
 
+[source,python]
 ----
 import shadercrs
 
@@ -99,6 +106,7 @@ if result.get_num_warnings() > 0:
 
 #### Fragment Shader with Macros and Assembly
 
+[source,python]
 ----
 import shadercrs
 
@@ -146,6 +154,7 @@ print("SPIR-V Assembly:", spirv_asm.as_text())
 
 #### Preprocessing with Macro Definitions
 
+[source,python]
 ----
 import shadercrs
 
@@ -197,6 +206,7 @@ if spirv is not None:
 
 #### Compute Shader Compilation to SPIR-V File
 
+[source,python]
 ----
 import shadercrs
 
@@ -240,6 +250,7 @@ except Exception as e:
 
 #### Querying SPIR-V Version and Parsing Profile
 
+[source,python]
 ----
 import shadercrs
 
@@ -290,6 +301,7 @@ if __name__ == "__main__":
 
 #### Basic Compute Shader Compilation as `uv` Script
 
+[source,python]
 ----
 #!/usr/bin/env -S uv run
 # /// script
@@ -325,27 +337,13 @@ print(f"Compiled SPIR-V size: {len(spirv_binary)} words")
 
 if result.get_num_warnings() > 0:
     print("Compilation warnings:", result.get_warning_messages())
-
-"""
-
-result = compiler.compile_into_spirv(
-    source=vertex_shader,
-    stage="vertex",
-    input_file_name="shader.vert",
-    entry_point="main",
-)
-
-spirv_binary = result.as_binary()
-print(f"Compiled SPIR-V size: {len(spirv_binary)} words")
-
-if result.get_num_warnings() > 0:
-    print("Compilation warnings:", result.get_warning_messages())
 ----
 
 ## Development
 
-To develop shaderc-rs-py, you can use VS Code in tandem with UV to manage your environment. Run the following commands in your project directory:
+To develop `shaderc-rs-py`, you can use VS Code in tandem with UV to manage your environment. Run the following commands in your project directory:
 
+[source,bash]
 ----
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv self update
@@ -355,24 +353,27 @@ uv add ruff
 maturin develop --uv
 ----
 
-Then open the project in VS Code (or any other editor) and begin making changes. You can run tests (once tests are implemented) by installing pytest inside your environment and executing:
+Then open the project in VS Code (or any other editor) and begin making changes. You can run tests (once tests are implemented) by installing `pytest` inside your environment and executing:
 
+[source,bash]
 ----
 pytest
 ----
 
 ## Running the Example Explorer
 
-A real-time shader editing example is located in the "examples" directory. This example uses PySide6 for the GUI and wgpu-py for GPU rendering. It displays a constantly rendered scene in which you can modify a fragment shader and see changes immediately.
+A real-time shader editing example is located in the `examples` directory. This example uses PySide6 for the GUI and wgpu-py for GPU rendering. It displays a constantly rendered scene in which you can modify a fragment shader and see changes immediately.
 
 Steps to run the example:
 
-1. Ensure you have wgpu-py and PySide6 installed (already part of the requirements in the "pyproject.toml" file).
+1. Ensure you have wgpu-py and PySide6 installed (already part of the requirements in the `pyproject.toml` file).
 +
+[source,bash]
 ----
 uv sync
 ----
-2. Activate your environment and navigate to the "examples" directory.
-3. Run the Python script (e.g., "python explorer.py" if that is the entry point).
+
+2. Activate your environment and navigate to the `examples` directory.  
+3. Run the Python script (e.g., `python explorer.py` if that is the entry point).  
 
 Once launched, a window will appear where you can adjust the optimization level, edit the shader source, and observe the effects in real-time.
