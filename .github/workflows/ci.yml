@@ -44,6 +44,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: "true"
           manylinux: auto
+          docker-options: "-e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -75,6 +76,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: "true"
           manylinux: musllinux_1_2
+          docker-options: "-e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
