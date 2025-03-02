@@ -232,6 +232,25 @@ impl FromPythonicString for shaderc::Limit {
             "max_cull_distances" => Ok(Self::MaxCullDistances),
             "max_combined_clip_and_cull_distances" => Ok(Self::MaxCombinedClipAndCullDistances),
             "max_samples" => Ok(Self::MaxSamples),
+            "max_mesh_output_vertices_nv" => Ok(Self::MaxMeshOutputVerticesNv),
+            "max_mesh_output_primitives_nv" => Ok(Self::MaxMeshOutputPrimitivesNv),
+            "max_mesh_work_group_size_x_nv" => Ok(Self::MaxMeshWorkGroupSizeXNv),
+            "max_mesh_work_group_size_y_nv" => Ok(Self::MaxMeshWorkGroupSizeYNv),
+            "max_mesh_work_group_size_z_nv" => Ok(Self::MaxMeshWorkGroupSizeZNv),
+            "max_task_work_group_size_x_nv" => Ok(Self::MaxTaskWorkGroupSizeXNv),
+            "max_task_work_group_size_y_nv" => Ok(Self::MaxTaskWorkGroupSizeYNv),
+            "max_task_work_group_size_z_nv" => Ok(Self::MaxTaskWorkGroupSizeZNv),
+            "max_mesh_view_count_nv" => Ok(Self::MaxMeshViewCountNv),
+            "max_mesh_output_vertices_ext" => Ok(Self::MaxMeshOutputVerticesExt),
+            "max_mesh_output_primitives_ext" => Ok(Self::MaxMeshOutputPrimitivesExt),
+            "max_mesh_work_group_size_x_ext" => Ok(Self::MaxMeshWorkGroupSizeXExt),
+            "max_mesh_work_group_size_y_ext" => Ok(Self::MaxMeshWorkGroupSizeYExt),
+            "max_mesh_work_group_size_z_ext" => Ok(Self::MaxMeshWorkGroupSizeZExt),
+            "max_task_work_group_size_x_ext" => Ok(Self::MaxTaskWorkGroupSizeXExt),
+            "max_task_work_group_size_y_ext" => Ok(Self::MaxTaskWorkGroupSizeYExt),
+            "max_task_work_group_size_z_ext" => Ok(Self::MaxTaskWorkGroupSizeZExt),
+            "max_mesh_view_count_ext" => Ok(Self::MaxMeshViewCountExt),
+            "max_dual_source_draw_buffers_ext" => Ok(Self::MaxDualSourceDrawBuffersExt),
             _ => Err(format!("Invalid value: {}", s)),
         }
     }
@@ -312,10 +331,11 @@ impl CompileOptions {
     #[new]
     fn new() -> PyResult<Self> {
         match shaderc::CompileOptions::new() {
-            Some(opts) => Ok(CompileOptions { inner: opts }),
-            None => Err(pyo3::exceptions::PyRuntimeError::new_err(
-                "Failed to create CompileOptions",
-            )),
+            Ok(opts) => Ok(CompileOptions { inner: opts }),
+            Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(format!(
+                "Failed to create CompileOptions: {}",
+                e
+            ))),
         }
     }
 
@@ -443,10 +463,11 @@ impl Compiler {
     #[new]
     fn new() -> PyResult<Self> {
         match shaderc::Compiler::new() {
-            Some(c) => Ok(Compiler { inner: c }),
-            None => Err(pyo3::exceptions::PyRuntimeError::new_err(
-                "Failed to create shaderc::Compiler",
-            )),
+            Ok(c) => Ok(Compiler { inner: c }),
+            Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(format!(
+                "Failed to create Compiler: {}",
+                e
+            ))),
         }
     }
 
@@ -539,7 +560,10 @@ fn get_spirv_version_py() -> (u32, u32) {
 
 #[pyfunction]
 fn parse_version_profile_py(verprof: &str) -> Option<(u32, String)> {
-    shaderc::parse_version_profile(verprof).map(|(v, p)| (v, format!("{:?}", p)))
+    match shaderc::parse_version_profile(verprof) {
+        Ok((v, p)) => Some((v, format!("{:?}", p))),
+        Err(_) => None,
+    }
 }
 
 #[pymodule]

@@ -1,7 +1,7 @@
 # shaderc-rs-py
 :toc:
 
-`shaderc-rs-py` provides Python bindings for the `shaderc` library through `shaderc-rs` Rust bindings for compiling GLSL shaders to SPIR-V binary or assembly directly from Python code. By leveraging `PyO3`, `shaderc-rs-py` aims to provide a flexible API surface, including support for advanced shader compilation options, preprocessing capabilities, macro definitions, and SPIR-V assembly generation.
+`shaderc-rs-py` provides Python bindings for the `shaderc` library through the `shaderc-rs` Rust bindings for compiling GLSL shaders to SPIR-V binary or assembly directly from Python code. By leveraging `PyO3`, `shaderc-rs-py` aims to provide a flexible API surface, including support for advanced shader compilation options, preprocessing capabilities, macro definitions, and SPIR-V assembly generation.
 
 image::assets/images/shaderc-rs-py-20250124.webp[shaderc-rs-py Example Explorer]
 
@@ -373,6 +373,11 @@ uv sync
 ----
 
 2. Activate your environment and navigate to the `examples` directory.  
-3. Run the Python script (e.g., `python explorer.py` if that is the entry point).  
+3. Run the Python script.
++
+[source,bash]
+----
+python explorer.py
+----
 
 Once launched, a window will appear where you can adjust the optimization level, edit the shader source, and observe the effects in real-time.
