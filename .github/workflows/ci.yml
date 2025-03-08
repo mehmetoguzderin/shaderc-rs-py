@@ -30,6 +30,9 @@ jobs:
           - runner: ubuntu-24.04
             target: aarch64
             container: quay.io/pypa/manylinux_2_34_aarch64:latest
+          - runner: ubuntu-24.04
+            target: ppc64le
+            container: quay.io/pypa/manylinux_2_34_ppc64le:latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup QEMU
@@ -64,11 +67,9 @@ jobs:
           - runner: ubuntu-24.04
             target: x86_64
           - runner: ubuntu-24.04
-            target: x86
-          - runner: ubuntu-24.04
             target: aarch64
           - runner: ubuntu-24.04
-            target: armv7
+            target: ppc64le
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
