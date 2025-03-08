@@ -70,13 +70,13 @@ jobs:
         with:
           python-version: 3.13
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: PyO3/maturin-action@v1.47.2
         with:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: "true"
           manylinux: musllinux_1_2
-          docker-options: "-e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
+          docker-options: "-e CXXFLAGS=-std=c++17 -e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
