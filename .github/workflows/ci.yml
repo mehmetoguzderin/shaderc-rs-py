@@ -44,7 +44,11 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: "true"
           manylinux: auto
-          docker-options: "-e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
+          docker-options: "-e CXXFLAGS=-std=c++17 -e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
+          before-script-linux: |
+            curl -L https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.sh -o cmake-install.sh
+            bash cmake-install.sh --skip-license --prefix=/usr
+            cmake --version
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
