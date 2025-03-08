@@ -26,6 +26,10 @@ jobs:
         platform:
           - runner: ubuntu-24.04
             target: x86_64
+            container: quay.io/pypa/manylinux_2_34_x86_64:latest
+          - runner: ubuntu-24.04
+            target: aarch64
+            container: quay.io/pypa/manylinux_2_34_aarch64:latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup QEMU
@@ -40,6 +44,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: "false"
           manylinux: 2_34
+          container: ${{ matrix.platform.container }}
           docker-options: "-e CXXFLAGS=-std=c++17 -e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
           before-script-linux: |
             curl -L https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.sh -o cmake-install.sh
