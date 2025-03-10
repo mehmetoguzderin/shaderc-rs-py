@@ -415,7 +415,8 @@ dependencies = [
 [[package]]
 name = "shaderc"
 version = "0.9.0"
-source = "git+https://github.com/mehmetoguzderin/shaderc-rs.git?branch=v2025-initial#c7eb3bd27422bbfa0f296f0a20cad1fb03643d62"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d23364f177d251efb69097286aaeab6c2bf7500343f762fd49a4484a01976933"
 dependencies = [
  "libc",
  "shaderc-sys",
@@ -423,7 +424,7 @@ dependencies = [
 
 [[package]]
 name = "shaderc-rs-py"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "pyo3",
  "shaderc",
@@ -432,7 +433,8 @@ dependencies = [
 [[package]]
 name = "shaderc-sys"
 version = "0.9.0"
-source = "git+https://github.com/mehmetoguzderin/shaderc-rs.git?branch=v2025-initial#c7eb3bd27422bbfa0f296f0a20cad1fb03643d62"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d439c3cabc21b2e1373b8a344940ce3604dabc0a89540805634c89f4d6e2c68d"
 dependencies = [
  "cmake",
  "libc",
