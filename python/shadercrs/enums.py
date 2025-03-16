@@ -12,6 +12,7 @@ class EnvVersion(Enum):
     VULKAN_1_1 = "vulkan_1_1"
     VULKAN_1_2 = "vulkan_1_2"
     VULKAN_1_3 = "vulkan_1_3"
+    VULKAN_1_4 = "vulkan_1_4"
     OPENGL_4_5 = "opengl_4_5"
 
 
