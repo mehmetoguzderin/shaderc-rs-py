@@ -26,6 +26,7 @@ impl FromPythonicString for shaderc::EnvVersion {
             "vulkan_1_1" => Ok(Self::Vulkan1_1),
             "vulkan_1_2" => Ok(Self::Vulkan1_2),
             "vulkan_1_3" => Ok(Self::Vulkan1_3),
+            "vulkan_1_4" => Ok(Self::Vulkan1_4),
             "opengl_4_5" => Ok(Self::OpenGL4_5),
             _ => Err(format!("Invalid value: {}", s)),
         }
