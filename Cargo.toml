@@ -10,4 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.23.3", features = [ "abi3-py312", "anyhow", "chrono", "chrono-tz", "either", "extension-module", "eyre", "generate-import-lib", "hashbrown", "indexmap", "serde", "smallvec" ] }
-shaderc = { version = "0.9.0", features = [ "build-from-source", "prefer-static-linking" ] }
+shaderc = { version = "0.9.1", features = [ "build-from-source", "prefer-static-linking" ] }
