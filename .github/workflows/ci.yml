@@ -48,7 +48,7 @@ jobs:
           sccache: "false"
           manylinux: 2_34
           container: ${{ matrix.platform.container }}
-          docker-options: "-e CXXFLAGS=-std=c++17 -e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
+          docker-options: "-e CXXFLAGS=-std=c++17 -e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17' -e CMAKE_POLICY_VERSION_MINIMUM=3.5"
           before-script-linux: |
             curl -L https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.sh -o cmake-install.sh
             bash cmake-install.sh --skip-license --prefix=/usr
@@ -82,7 +82,7 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: "true"
           manylinux: musllinux_1_2
-          docker-options: "-e CXXFLAGS=-std=c++17 -e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17'"
+          docker-options: "-e CXXFLAGS=-std=c++17 -e CMAKE_CXX_FLAGS=-std=c++17 -e CMAKE_ARGS='-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=-std=c++17' -e CMAKE_POLICY_VERSION_MINIMUM=3.5"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -110,6 +110,8 @@ jobs:
           architecture: ${{ matrix.platform.target }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          CMAKE_POLICY_VERSION_MINIMUM: "3.5"
         with:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
@@ -138,6 +140,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         env:
           MACOSX_DEPLOYMENT_TARGET: "10.15"
+          CMAKE_POLICY_VERSION_MINIMUM: "3.5"
         with:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
@@ -154,6 +157,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build sdist
         uses: PyO3/maturin-action@v1
+        env:
+          CMAKE_POLICY_VERSION_MINIMUM: "3.5"
         with:
           command: sdist
           args: --out dist
