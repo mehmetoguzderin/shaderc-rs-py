@@ -52,7 +52,6 @@ impl FromPythonicString for shaderc::SourceLanguage {
     fn from_pythonic_string(s: &str) -> Result<Self, String> {
         match s.to_lowercase().as_str() {
             "glsl" => Ok(Self::GLSL),
-            "hlsl" => Ok(Self::HLSL),
             _ => Err(format!("Invalid value: {}", s)),
         }
     }
