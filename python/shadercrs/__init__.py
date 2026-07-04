@@ -1,6 +1,8 @@
-from .shadercrs import *
+from . import shadercrs as shadercrs
 
-from .enums import *
+from .shadercrs import *  # noqa: F403
+
+from .enums import *  # noqa: F403
 
 __doc__ = shadercrs.__doc__
 if hasattr(shadercrs, "__all__"):
