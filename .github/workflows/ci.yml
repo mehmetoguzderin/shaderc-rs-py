@@ -103,7 +103,13 @@ jobs:
       - name: Use a short Cargo target folder
         run: echo "CARGO_TARGET_DIR=D:\\a\\w" >> $Env:GITHUB_ENV
       - name: Install Ninja
-        run: choco install ninja --version=1.12.1 -y
+        shell: pwsh
+        run: |
+          if (Get-Command ninja -ErrorAction SilentlyContinue) {
+            ninja --version
+          } else {
+            choco install ninja --version=1.12.1 -y
+          }
       - uses: actions/setup-python@v6.3.0
         with:
           python-version: 3.13
